@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanFrame</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: none; }
+  .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0;
+    transition: opacity 2.5s ease-in-out; will-change: opacity; }
+  .photo.is-on { opacity: 1; }
+  .shade { position: absolute; inset: 0; z-index: 2; background: linear-gradient(160deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 38%); }
+  .clock { position: absolute; z-index: 3; left: 5.8vw; top: 6.5vh; color: #fff; font-family: Manrope, sans-serif; font-weight: 500;
+    font-size: 7.5vw; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums;
+    text-shadow: 0 .1vw 1.2vw rgba(0,0,0,.35); }
+</style>
+</head>
+<body>
+<img class="photo" id="a" alt="">
+<img class="photo" id="b" alt="">
+<div class="shade"></div>
+<div class="clock" id="clock"></div>
+<script src="assets/wallpapers/catalog.js"></script>
+<script>
+/* CleanFrame screensaver: the launcher's wallpapers, one a minute with a crossfade, and the 24-hour clock. */
+(function () {
+  'use strict';
+  var WALLS = window.CleanFrameWallpapers || [], CHANGE_MS = 60000;
+  var imgs = [document.getElementById('a'), document.getElementById('b')], shown = 0, index = 0;
+  var clock = document.getElementById('clock');
+
+  function savedWall() {   // start from the photo Home is showing
+    try { var s = JSON.parse(localStorage.getItem('cleanframe.home.v1')) || {}; return (s.look && s.look.wall) || s.wall || s.wallpaper; }
+    catch (e) { return null; }
+  }
+  function tick() {
+    var d = new Date(), h = d.getHours(), m = d.getMinutes();
+    clock.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+    setTimeout(tick, 60000 - (Date.now() % 60000) + 30);
+  }
+  function show(i) {
+    var next = imgs[1 - shown];
+    next.onload = function () {
+      var old = imgs[shown];
+      next.onload = null;
+      next.style.zIndex = 1; old.style.zIndex = 0;   // the new photo fades in over the old one, so nothing dips to black
+      next.className = 'photo is-on';
+      setTimeout(function () { old.className = 'photo'; }, 2600);
+      shown = 1 - shown;
+    };
+    next.src = WALLS[i].src;
+  }
+  function advance() { index = (index + 1) % WALLS.length; show(index); }
+
+  tick();
+  if (WALLS.length) {
+    var start = savedWall();
+    WALLS.forEach(function (w, i) { if (w.id === start) index = i; });
+    show(index);
+    setInterval(advance, CHANGE_MS);
+  }
+}());
+</script>
+</body>
+</html>

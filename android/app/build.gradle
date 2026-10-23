@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'app.cleanframe.tv'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'app.cleanframe.tv'
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName '0.6.1-android'
+    }
+
+    // The web app in ../../app is the launcher itself; src/main/dream holds the screensaver page.
+    sourceSets {
+        main {
+            assets.srcDirs = ['../../app', 'src/main/dream']
+        }
+    }
+
+    // Tizen packaging files and private fonts never ship in the APK.
+    androidResources {
+        ignoreAssetsPattern '!config.xml:!private-fonts:!*.md:!SOURCES.json:!ADDITIONAL-SOURCES.json'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            // Sideloaded over ADB, never published.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

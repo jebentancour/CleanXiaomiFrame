@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_service_label">CleanFrame: botones del control</string>
+    <string name="key_service_description">Abre los ajustes de la TV con el botón Configuración y YouTube con su botón, y anula los botones Xiaomi TV+, Netflix y Prime Video del control.</string>
+</resources>

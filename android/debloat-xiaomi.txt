@@ -1,0 +1,87 @@
+# Packages disabled on the reference TV: Xiaomi MiTV-MOOR4 (venom), Google TV / Android 11.
+# One package per line; # starts a comment. Nothing is uninstalled: each one is disabled for user 0
+# and comes back with `pm enable`. docs/android-xiaomi.md has the commands to apply and undo the list.
+#
+# Based on debloat.txt from CleanXiaomiTV (https://github.com/majnioui/CleanXiaomiTV), MIT, which keeps
+# its reasons per package. The additions here are marked "added".
+#
+# Keep enabled: Chromecast (com.google.android.apps.mediashell), Live TV (com.mitv.livetv: it switches the
+# HDMI inputs), com.mediatek.tvinput and com.mediatek.tv.service (HDMI picture and sound), mitv.service,
+# com.xiaomi.mitv.scenemode (game mode), com.xiaomi.android.tvsetup.partnercustomizer (the remote's Input
+# and Settings buttons), Bluetooth (the remote), Play Store and Play services, Gboard, WebView.
+# The Google TV launcher and the setup wizard are handled in docs/android-xiaomi.md, not here.
+
+# Xiaomi and Google telemetry
+com.miui.tv.analytics
+com.xiaomi.statistic
+com.xiaomi.tvqs.overseas
+com.google.android.feedback
+
+# Ad rows, promos and content providers on the stock home screen
+com.mitv.tvhome.oemtab
+com.mitv.tvhome.michannel
+com.xm.webcontent
+com.google.android.partnersetup
+
+# Retail demo mode
+fusion.android.tv.demo
+
+# Xiaomi extras
+com.mitv.toolhouse
+com.xiaomo.tv.milegal
+android.autoinstalls.config.xiaomi.amelie
+
+# Mi Cast / Miracast (Chromecast stays)
+com.xiaomi.mitv.smartshare
+com.xiaomi.wfdsinkhelperservice
+
+# Google Assistant voice (the remote's microphone button stops working)
+com.google.android.katniss
+com.google.android.tv.assistant
+
+# Preloaded apps
+com.google.android.youtube.tvmusic
+com.xiaomi.mimusic2
+com.google.android.play.games
+
+# Unused system leftovers
+com.android.printspooler
+com.android.dreams.basic
+com.android.dynsystem
+com.android.hotspot2.osulogin
+com.android.soundpicker
+com.android.wallpaperbackup
+com.android.settings.intelligence
+com.google.android.onetimeinitializer
+com.mediatek.android.leanbacklauncher.partnercustomizer
+com.mstar.android.tv.disclaimercustomization
+mediatek.factorymenu.ui
+
+# Calendar sync
+com.android.providers.calendar
+com.google.android.syncadapters.calendar
+
+# Screen reader and text-to-speech
+com.google.android.marvin.talkback
+com.google.android.tts
+
+# Added: system pieces nothing on this TV uses
+com.android.cts.ctsshim
+com.android.cts.priv.ctsshim
+com.android.htmlviewer
+com.android.companiondevicemanager
+com.mediatek.android.boot.appsplashscreen
+com.android.providers.userdictionary
+
+# Added: the TV tuner, for a TV used only with HDMI devices and apps (Live TV itself stays: it switches
+# the HDMI inputs)
+com.mitv.livetv.ci_mediatek
+com.mediatek.wwtv.setupwizard
+
+# Added: Xiaomi's app updater. Firmware updates come from Google; see "Updates" in the setup guide.
+com.mitv.upgrader
+
+# Personal choice on the reference TV, left commented out: their remote buttons do nothing either way,
+# because the remote-button service blocks them.
+# com.netflix.ninja
+# com.amazon.amazonvideo.livingroom

@@ -1,0 +1,44 @@
+[
+  {
+    "icon": "spotify",
+    "source": "https://github.com/simple-icons/simple-icons/blob/develop/icons/spotify.svg",
+    "licence": "CC0-1.0",
+    "note": "Shape unchanged; white fill for launcher."
+  },
+  {
+    "icon": "hbomax",
+    "source": "https://github.com/simple-icons/simple-icons/blob/develop/icons/hbomax.svg",
+    "licence": "CC0-1.0",
+    "note": "Shape unchanged; white fill for launcher."
+  },
+  {
+    "icon": "tubi",
+    "source": "https://github.com/simple-icons/simple-icons/blob/develop/icons/tubi.svg",
+    "licence": "CC0-1.0",
+    "note": "Shape unchanged; white fill for launcher."
+  },
+  {
+    "icon": "gamepad",
+    "source": "Original drawing for CleanFrame",
+    "licence": "MIT",
+    "note": "Generic game controller for HDMI consoles; white fill for launcher."
+  },
+  {
+    "icon": "jellyfin",
+    "source": "Drawn for CleanFrame after the Jellyfin logo's shape",
+    "licence": "MIT",
+    "note": "Simplified white mark; Jellyfin is a trademark of the Jellyfin project."
+  },
+  {
+    "icon": "appearance",
+    "source": "Original drawing for CleanFrame",
+    "licence": "MIT",
+    "note": "Paint palette for the Apariencia tile, so it differs from Android's Settings gear."
+  },
+  {
+    "icon": "tiktok",
+    "source": "Drawn for CleanFrame after the TikTok logo's shape",
+    "licence": "MIT",
+    "note": "Simplified white note; TikTok is a trademark of ByteDance."
+  }
+]

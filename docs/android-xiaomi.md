@@ -24,6 +24,12 @@ grep -vE '^\s*(#|$)' android/debloat-xiaomi.txt | while read p; do adb -s TV:555
 
 A few packages may answer `SecurityException`: the firmware already hides them, and they stay off. To undo, run the same loop with `pm enable "$p"`.
 
+Halving the system animations makes menus feel quicker (set them back to `1.0` to undo):
+
+```sh
+for k in window_animation_scale transition_animation_scale animator_duration_scale; do adb -s TV:5555 shell settings put global $k 0.5; done
+```
+
 ## 3. Build and install
 
 You need a JDK (17 or newer) and the Android SDK with platform 36.

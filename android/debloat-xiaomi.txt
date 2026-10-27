@@ -81,6 +81,17 @@ com.mediatek.wwtv.setupwizard
 # Added: Xiaomi's app updater. Firmware updates come from Google; see "Updates" in the setup guide.
 com.mitv.upgrader
 
+# Added: Xiaomi's TV Manager cleaner (an always-running service, with Firebase and Google Analytics)
+com.xiaomi.mitv.tvmanager
+
+# Added: Google's screensaver and smart-home panel (CleanXiaomiFrame has its own screensaver)
+com.google.android.apps.tv.dreamx
+
+# Added: Xiaomi's USB gallery and media player, for a TV that never plays files from USB
+com.mitv.gallery
+com.mitv.videoplayer
+com.xiaomi.mitv.mediaexplorer
+
 # Personal choice on the reference TV, left commented out: their remote buttons do nothing either way,
 # because the remote-button service blocks them.
 # com.netflix.ninja

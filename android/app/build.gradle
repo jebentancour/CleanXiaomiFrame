@@ -26,6 +26,14 @@ android {
         ignoreAssetsPattern '!config.xml:!private-fonts:!*.md:!SOURCES.json:!ADDITIONAL-SOURCES.json'
     }
 
+    // The key the installed app was signed with, kept out of Git: losing it means reinstalling from scratch.
+    signingConfigs {
+        debug {
+            def kept = rootProject.file('../.local/android/debug.keystore')
+            if (kept.exists()) storeFile kept
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false

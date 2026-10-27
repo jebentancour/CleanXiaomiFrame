@@ -6,7 +6,7 @@
 - List: Up/Down scrolls the apps without wrapping. Right enters the bottom-right controls, aligned with the clock above. Up/Down moves between Art Mode, All apps and Settings. Left or Back returns to the selected app. The list fades at both ends as it scrolls.
 - OK opens the selected item. Focus alone never launches an app.
 - Icons-only apps and controls reveal their names when focused. App presentation and control presentation are independent.
-- Back from the app list or Dock opens a choice to stay or open Samsung Home.
+- Back from the app list or Dock starts the screensaver on Android (through System UI's screensaver shortcut). The Samsung build and the browser preview stay on Home.
 - A panel keeps focus within its own controls. Back closes one panel at a time.
 - Returning to the running launcher keeps the selected app or panel item. There is no auto-return timer. Held OK and Back keys act once until the key is released.
 
@@ -43,12 +43,12 @@ The five-column grid scrolls with remote focus. OK launches an app; its On Home 
 
 ## Apps on Home
 
-Open the editor from Settings or All apps. On Home shows the current order on the left. Not on Home shows Recently removed first, followed by other installed apps on the right. Home holds one to nine apps.
+Open the editor from Settings or All apps. Like Appearance's groups, it has a back control at the top left (Apariencia, or Todas las apps when opened from there) above the Apps title. On Home shows the current order on the left. Not on Home shows Recently removed first, followed by other installed apps on the right. Home holds one to nine apps.
 
-- Reorder: OK on an app name picks it up. Up/Down moves it. OK places it and saves the order. Back puts an unplaced app back without saving that move.
+- Reorder: OK on an app name picks it up. Up/Down moves it. OK or Back places it and saves the order.
 - Remove: Right from an app name reaches Remove from Home. OK saves the removal and moves focus to the same app in Recently removed. The app stays installed.
 - Add: OK on an app in Not on Home adds it and saves. A recently removed app returns to its previous position within the editing session; another app is added at the end. Focus follows the app to its Remove from Home control, so another OK can reverse the addition.
-- Undo reverses a completed addition, removal or reorder from the current editing session. Done or Back closes the editor and keeps completed changes. Undo history ends when the editor closes.
+- Every change applies and saves at once; there is no Undo or Done. Back, or OK on the back control, closes the editor.
 
 Removing the last Home app or adding a tenth app is prevented. A failed storage write keeps the committed choices and order, with a retry message. Saved native app IDs and names survive a restart or a failed catalogue refresh.
 
@@ -81,6 +81,8 @@ The native Home operation and startup configuration from 19 October remain separ
 
 ## Clock and rendering
 
-Both layouts show the TV's local time in 12-hour format, without AM/PM or seconds. It updates at the minute boundary and on return to the launcher. No date or clock panel is shown.
+Both layouts show the TV's local time in 12-hour format, without AM/PM or seconds. Below it, the date reads like *Lunes 26 de Oct*, in the Home font. On photos both are always light, with a layered text shadow for contrast; there is no band across the top and no per-photo clock colour. Both update at the minute boundary and on return to the launcher.
+
+In List the clock and date sit at the top right but align left, as in Dock. On Android, Home held shows a quick menu over the app in front; see [Xiaomi Google TV setup](android-xiaomi.md#quick-menu).
 
 Photographic materials and blurred panel backgrounds are generated before packaging and stay aligned with the full-screen image. Photo colour and contrast metadata are also prepared offline. Navigation does not sample image pixels, run an optics engine or apply live backdrop blur. Flat backgrounds use matching light or dark panel colours. Focus feedback uses transforms and opacity; reduced motion removes animated scaling and movement while retaining opacity feedback.

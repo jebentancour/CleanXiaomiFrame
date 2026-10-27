@@ -200,6 +200,10 @@ final class Host {
     @JavascriptInterface
     public boolean tvSettings() { return start(new Intent(Settings.ACTION_SETTINGS)); }
 
+    /** Starts the screensaver now, through System UI's own launcher shortcut for it (PhotoDream when it is the chosen one). */
+    @JavascriptInterface
+    public boolean dream() { return start(new Intent().setClassName("com.android.systemui", "com.android.systemui.Somnambulator")); }
+
     private boolean start(Intent intent) {
         try {
             activity.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

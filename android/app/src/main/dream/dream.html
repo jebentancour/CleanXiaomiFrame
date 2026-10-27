@@ -12,31 +12,36 @@
   .photo.is-on { opacity: 1; }
   .shade { position: absolute; inset: 0; z-index: 2; background: linear-gradient(160deg, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 38%); }
   .clock { position: absolute; z-index: 3; left: 5.8vw; top: 6.5vh; color: #fff; font-family: Manrope, sans-serif; font-weight: 500;
-    font-size: 7.5vw; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums;
+    font-size: 4.16vw; letter-spacing: -.03em; line-height: 1.333; font-variant-numeric: tabular-nums;
     text-shadow: 0 .1vw 1.2vw rgba(0,0,0,.35); }
+  /* Home's caption proportions: clock 48px over a 30px date. */
+  .date { display: block; margin-top: .22vw; font-size: 2.6vw; line-height: 1.333; letter-spacing: -.01em; opacity: .82; }
+  /* Everything starts on black and fades in together with the first photo. */
+  .shade, .clock { animation: enter 2.5s ease-in-out .4s both; }
+  @keyframes enter { from { opacity: 0; } to { opacity: 1; } }
 </style>
 </head>
 <body>
 <img class="photo" id="a" alt="">
 <img class="photo" id="b" alt="">
 <div class="shade"></div>
-<div class="clock" id="clock"></div>
+<div class="clock"><span id="clock"></span><span class="date" id="date"></span></div>
 <script src="assets/wallpapers/catalog.js"></script>
+<script src="assets/clock.js"></script>
 <script>
-/* CleanFrame screensaver: the launcher's wallpapers, one a minute with a crossfade, and the 24-hour clock. */
+/* CleanFrame screensaver: the launcher's wallpapers, one a minute with a crossfade, and Home's clock and date. */
 (function () {
   'use strict';
-  var WALLS = window.CleanFrameWallpapers || [], CHANGE_MS = 60000;
+  var WALLS = window.CleanFrameWallpapers || [], CHANGE_MS = 60000, START_MS = 400;
   var imgs = [document.getElementById('a'), document.getElementById('b')], shown = 0, index = 0;
-  var clock = document.getElementById('clock');
+  var clock = document.getElementById('clock'), date = document.getElementById('date');
 
   function savedWall() {   // start from the photo Home is showing
     try { var s = JSON.parse(localStorage.getItem('cleanframe.home.v1')) || {}; return (s.look && s.look.wall) || s.wall || s.wallpaper; }
     catch (e) { return null; }
   }
   function tick() {
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    clock.textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
+    clock.textContent = CleanFrameClock.time(); date.textContent = CleanFrameClock.date();
     setTimeout(tick, 60000 - (Date.now() % 60000) + 30);
   }
   function show(i) {
@@ -45,6 +50,7 @@
       var old = imgs[shown];
       next.onload = null;
       next.style.zIndex = 1; old.style.zIndex = 0;   // the new photo fades in over the old one, so nothing dips to black
+      next.getBoundingClientRect();   // a cached photo loads before its first paint: lay out opacity 0 so the fade runs
       next.className = 'photo is-on';
       setTimeout(function () { old.className = 'photo'; }, 2600);
       shown = 1 - shown;
@@ -57,7 +63,7 @@
   if (WALLS.length) {
     var start = savedWall();
     WALLS.forEach(function (w, i) { if (w.id === start) index = i; });
-    show(index);
+    setTimeout(function () { show(index); }, START_MS);   // black first, while the screensaver window comes in
     setInterval(advance, CHANGE_MS);
   }
 }());

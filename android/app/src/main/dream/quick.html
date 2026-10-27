@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanFrame</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/typefaces.css">
+<style>
+  /* Sizes are the Home stage's pixels as vw (1px = 100vw / 1920), so the text matches Home's caption. */
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; cursor: none; }
+  .veil { position: absolute; inset: 0; background: rgba(6,8,10,.38); }
+  .panel { position: absolute; right: 3.333vw; top: 3.333vw; display: flex; flex-direction: column; gap: .208vw;
+    padding: 2.083vw 2.917vw 2.292vw; border-radius: 1.667vw; background: rgba(18,20,22,.86);
+    box-shadow: inset 0 1px 0 rgba(255,250,240,.1), 0 1.25vw 3.333vw rgba(0,0,0,.32); color: #f6f1e7;
+    font-family: Manrope, Arial, sans-serif; font-synthesis: none; }
+  /* QuickMenu keeps this page loaded off screen; show() replays the entrance each time it appears. */
+  .is-in .veil { animation: fade 180ms linear; }
+  .is-in .panel { animation: slide 220ms cubic-bezier(.2,.7,.2,1); }
+  .clock { font-size: 2.5vw; line-height: 3.333vw; font-weight: 500; letter-spacing: -.078vw; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .date { font-size: 1.563vw; line-height: 2.083vw; font-weight: 500; letter-spacing: -.01vw; white-space: nowrap; opacity: .82; }
+  .custom .clock { letter-spacing: -.01em; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slide { from { opacity: 0; transform: translate3d(2.5vw,0,0); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+<div class="veil"></div>
+<div class="panel" id="panel"><div class="clock" id="clock"></div><div class="date" id="date"></div></div>
+<script src="assets/clock.js"></script>
+<script>
+/* Android quick menu (QuickMenu.java): Home's clock and date, in the Home font, over another app.
+   The page stays loaded between showings; CleanFrameQuick.show() refreshes it as it appears. */
+(function () {
+  'use strict';
+  var C = window.CleanFrameClock, timer = 0;
+  var panel = document.getElementById('panel'), clock = document.getElementById('clock'), date = document.getElementById('date');
+  function font() {   // the Home font may have changed since the last showing
+    var id = C.savedFont(), f = C.fonts[id], custom = id !== 'manrope';
+    panel.className = custom ? 'panel custom' : 'panel';
+    clock.style.fontFamily = date.style.fontFamily = custom ? '"' + f.family + '", Manrope, sans-serif' : '';
+    clock.style.fontWeight = custom ? f.clock : '';   // the date keeps weight 500, as Home's caption line does
+    clock.style.fontVariationSettings = id === 'newsreader' ? '"opsz" 48' : '';
+    date.style.fontVariationSettings = id === 'newsreader' ? '"opsz" 28' : '';
+  }
+  function tick() {
+    clearTimeout(timer);
+    clock.textContent = C.time(); date.textContent = C.date();
+    timer = setTimeout(tick, 60000 - (Date.now() % 60000) + 30);
+  }
+  window.CleanFrameQuick = {
+    show: function () {
+      font(); tick();
+      document.body.className = '';
+      document.body.getBoundingClientRect();   // restart the entrance animation
+      document.body.className = 'is-in';
+    }
+  };
+  font(); tick();
+}());
+</script>
+</body>
+</html>

@@ -8,7 +8,7 @@
   var DOCK_BOTTOM = 984;   // 96 px from the bottom: the side margin of the wide dock, (1920 - 1728) / 2
   var DOCK_MODES = { both: { tw: 224, th: 168, pitch: 232 }, text: { tw: 288, th: 104, pitch: 296 }, icons: { tw: 176, th: 144, pitch: 184 } };
   var GRID_ROW = 240, GRID_COL = 282, COLS = 6, GRID_VIS = 4;
-  var ED_ROW = 80, ED_SEP = 56, ED_VIEW = 752, STRIP_PITCH = 188;
+  var ED_ROW = 80, ED_SEP = 56, ED_TOP = 300, ED_VIEW = 744, STRIP_PITCH = 188;
   var PH_TOP = 220, PH_PITCH = 128, PH_FULL = 5, PH_HEIGHT = 944, PH_COMPACT_TOP = 144, PH_COMPACT_PITCH = 88, PH_COMPACT_VISIBLE = 9;
   var WALL_VISIBLE = 6, WALL_ROW = 92, WALL_DELAY = 200;
   var HOLD_MS = 450, holdTimer = 0;   // a held OK in All apps opens the app's menu
@@ -46,14 +46,7 @@
   ];
   var KEY = 'cleanframe.home.v1', storageOk = true, catalog = { loading: false, loaded: false, error: null, request: 0, revision: 0 };
   var QA = window.ShoreQA = { minuteMs: window.ShoreQA && window.ShoreQA.minuteMs || 60000 };
-  var FONTS = {
-    manrope: { name: 'Manrope', family: 'Manrope', display: 600, ui: 500, clock: 500 },
-    montreal: { name: 'Neue Montreal', family: 'Study Montreal', display: 300, ui: 400, clock: 300 },
-    mori: { name: 'Mori', family: 'Study Mori', display: 200, ui: 400, clock: 200 },
-    pangram: { name: 'Pangram Sans', family: 'Study Pangram', display: 300, ui: 400, clock: 300 },
-    geist: { name: 'Geist', family: 'Study Geist', display: 300, ui: 400, clock: 300 },
-    newsreader: { name: 'Newsreader', family: 'Study Newsreader', display: 400, ui: 400, clock: 400 }
-  };
+  var FONTS = window.CleanFrameClock.fonts;
   var PRIVATE_FONTS = window.CleanFramePrivateFontIDs || [], fontMetrics = {}, unavailableFonts = {}, widthCache = {}, fontsReady = false;
   var LOOK_KEYS = ['bg', 'layout', 'apps', 'font', 'controls', 'focus', 'material'];
   var LOOK_VALUES = { bg: ['dark', 'light', 'photo'], layout: ['list', 'dock'], apps: ['icons', 'both', 'text'], font: Object.keys(FONTS).filter(function (id) { return id === 'manrope' || PRIVATE_FONTS.indexOf(id) >= 0; }), controls: ['icons', 'both', 'text'], focus: ['type', 'glass'], material: ['soft', 'frost', 'tint'] };
@@ -69,7 +62,6 @@
     arrange: '<path d="M4 8.5h14M15 5.5l3 3-3 3M20 15.5H6M9 12.5l-3 3 3 3"/>',
     settings: '<path d="m9 3-.6 2.4-2 1.2L4 6l-2 3.5L3.8 11v2L2 14.5 4 18l2.4-.6 2 1.2L9 21h6l.6-2.4 2-1.2 2.4.6 2-3.5-1.8-1.5v-2L22 9.5 20 6l-2.4.6-2-1.2L15 3Z"/><circle cx="12" cy="12" r="3.2"/>',
     home: '<path d="M4 11 12 4.5l8 6.5v8a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1Z"/>',
-    undo: '<path d="M9 6 5 10l4 4"/><path d="M5 10h9.5a4.5 4.5 0 0 1 0 9H11"/>',
     check: '<path d="m5.5 12.5 4 4 9-9"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     left: '<path d="m14.5 5-7 7 7 7"/>',
@@ -86,7 +78,7 @@
   var S = {
     variant: 'B', geom: 'broad', c: null, stack: null,
     sel: null, selIdx: 0, lastUtil: 0, appsFocus: null, settingsFocus: 'background', appearanceFocus: 'bg', detailFocus: {},
-    undo: [], removedAt: {}, note: null, err: null,
+    removedAt: {}, note: null, err: null,
     writes: 0, failed: 0, log: [], logN: 0, lastLaunch: null, press: null,
     wallShown: null, wallPending: null, wallError: null,
     shown: null, pending: null, lookError: null, bundleKey: null, previewBundle: null, reflow: false, fontSwitch: false
@@ -386,12 +378,11 @@
     // Keep the old schema keys alongside the builder values for in-place updates.
     try { localStorage.setItem(KEY, JSON.stringify(serialise(initial))); S.c = initial; storageOk = true; } catch (e) { storageOk = false; }
   }
-  function clearSession() { S.undo = []; S.removedAt = {}; S.note = null; S.err = null; }
+  function clearSession() { S.removedAt = {}; S.note = null; S.err = null; }
   function begin() { S.note = null; }
   function next(home, recent) { var c = lookOf(S.c); c.home = home; c.recent = recent; c.devices = S.c.devices; c.lastApp = S.c.lastApp; c.mode = S.c.mode; return c; }
   /* The dock: HDMI devices first, then the editable apps, then Apariencia. */
   function dockIds() { return S.c.devices.concat(S.c.home, [SETTINGS]); }
-  function snap() { return { home: S.c.home.slice(), recent: S.c.recent.slice() }; }
   function pushRecent(list, id) { return [id].concat(without(list, id)).slice(0, 5); }
   function write(c, label) {
     try { localStorage.setItem(KEY, JSON.stringify(serialise(c))); }
@@ -420,40 +411,22 @@
 
   /* Membership and order operations shared by B and C. A works on slots (below). */
   function homeRemove(id) {
-    var a = app(id), i = S.c.home.indexOf(id), before = snap(), h;
+    var a = app(id), i = S.c.home.indexOf(id), h;
     if (i < 0) return false;
     if (S.c.home.length <= 1) { S.note = LAST; return false; }
     h = S.c.home.slice(); h.splice(i, 1);
     if (!write(next(h, pushRecent(S.c.recent, id)), 'Quitar ' + a.name + ' del inicio')) return false;
     S.removedAt[id] = i;
-    S.undo.push({ label: 'Quitar ' + a.name, snap: before });
     return true;
   }
   function homeAdd(id) {
-    var a = app(id), before = snap(), h = S.c.home.slice(), at;
+    var a = app(id), h = S.c.home.slice(), at;
     if (h.length >= CAP) { S.note = FULL; return false; }
     at = S.removedAt.hasOwnProperty(id) ? Math.min(S.removedAt[id], h.length) : h.length;
     h.splice(at, 0, id);
-    if (!write(next(h, without(S.c.recent, id)), 'Agregar ' + a.name + ' al inicio')) return false;
-    S.undo.push({ label: 'Agregar ' + a.name, snap: before });
-    return true;
+    return write(next(h, without(S.c.recent, id)), 'Agregar ' + a.name + ' al inicio');
   }
-  function homeMove(order, id, before) {
-    var a = app(id);
-    if (!write(next(order, S.c.recent.slice()), 'Mover ' + a.name)) return false;
-    S.undo.push({ label: 'Mover ' + a.name, snap: before });
-    return true;
-  }
-  function undoLast(arr) {
-    var u = S.undo[S.undo.length - 1];
-    if (!u) { S.note = 'Nada para deshacer'; return false; }
-    if (!write(next(u.snap.home.slice(), u.snap.recent.slice()), 'Deshacer: ' + u.label)) return false;
-    S.undo.pop();
-    S.note = 'Deshecho: ' + u.label + '.';
-    return true;
-  }
-  function undoLabel() { var u = S.undo[S.undo.length - 1]; return u ? u.label : ''; }
-  function undoCaption() { var label = undoLabel(); return label ? 'Deshacer: ' + label.charAt(0).toLowerCase() + label.slice(1) : 'Nada para deshacer'; }
+  function homeMove(order, id) { return write(next(order, S.c.recent.slice()), 'Mover ' + app(id).name); }
   function editStatus(hint, move) {
     if (S.err) return statusHtml('', !!move);
     if (S.note === FULL || S.note === LAST) return '<span class="warn">' + esc(S.note) + '</span>';
@@ -546,7 +519,7 @@
     var i = S.c.home.indexOf(S.sel);   // the dock's selection, if it is an editable app
     clearSession();
     refreshCatalog();
-    push({ id: 'editor', origin: origin, lifted: null, top: 0, otherReturn: { id: otherList()[0] || null, index: 0, top: 0 }, f: { zone: S.c.home.length ? 'home' : 'other', i: Math.max(0, i), part: 'name', h: 1, j: 0 } });
+    push({ id: 'editor', origin: origin, lifted: null, top: 0, otherReturn: { id: otherList()[0] || null, index: 0, top: 0 }, f: { zone: S.c.home.length ? 'home' : 'other', i: Math.max(0, i), part: 'name', j: 0 } });
   }
   function openWallpaper() {
     var i = wallIndex(S.c.wall);
@@ -574,7 +547,7 @@
       }
       f.zone = 'apps';
       if (k === x.out) { if (U.length) { f.zone = 'util'; f.u = clamp(S.lastUtil, 0, U.length - 1); } }
-      else if (k === 'back') { }   // Home is the launcher: Back stays here
+      else if (k === 'back') FrameDevice.dream();   // Home is the launcher: Back starts the screensaver
       else if (!h.length) { if (k === 'ok') addAppsRoute(); }
       else if (k === x.prev && i > 0) setSel(h[i - 1]);
       else if (k === x.next && i < h.length - 1) setSel(h[i + 1]);
@@ -603,7 +576,7 @@
     if (k === 'up' && i > 0) setSel(h[i - 1]);
     else if (k === 'right') { if (U.length) { f.zone = 'util'; f.u = clamp(S.lastUtil, 0, U.length - 1); } }
     else if (k === 'down' && i < h.length - 1) setSel(h[i + 1]);
-    else if (k === 'back') { }
+    else if (k === 'back') FrameDevice.dream();
     else if (k === 'ok') { if (h.length) launch(S.sel); else addAppsRoute(); }
   }
 
@@ -812,16 +785,13 @@
       if (t.lifted) {
         d = k === 'up' ? -1 : k === 'down' ? 1 : 0;
         if (d && f.i + d >= 0 && f.i + d < nh) { tmp = H[f.i + d]; H[f.i + d] = H[f.i]; H[f.i] = tmp; f.i += d; S.err = null; }
-        else if (k === 'ok') editorPlace(t);
-        else if (k === 'back') { f.i = t.lifted.from; t.lifted = null; S.err = null; }
+        else if (k === 'ok' || k === 'back') editorPlace(t);   // changes always apply: Back places the app too
         return;
       }
       if (k === 'back') { closeEditor(t); return; }
       if (f.zone === 'head') {
-        if (k === 'left' && f.h > 0) f.h--;
-        else if (k === 'right' && f.h < 1) f.h++;
-        else if (k === 'down') { if (no) returnOther(t); else if (nh) f.zone = 'home'; }
-        else if (k === 'ok') { begin(); if (f.h === 0) undoLast(null); else closeEditor(t); }
+        if (k === 'down') { if (no) returnOther(t); else if (nh) f.zone = 'home'; }
+        else if (k === 'ok') closeEditor(t);
       } else if (f.zone === 'home') {
         if (k === 'up') { if (f.i > 0) f.i--; else f.zone = 'head'; }
         else if (k === 'down') { if (f.i < nh - 1) f.i++; }
@@ -829,7 +799,7 @@
         else if (k === 'left') { if (f.part === 'remove') f.part = 'name'; }
         else if (k === 'ok') {
           begin();
-          if (f.part === 'name') t.lifted = { id: H[f.i], from: f.i, order: H.slice(), snap: snap() };
+          if (f.part === 'name') t.lifted = { id: H[f.i], from: f.i, order: H.slice() };
           else editorRemove(t, H[f.i]);
         }
       } else {
@@ -843,7 +813,7 @@
       if (t.lifted) { if (z === 'name' && i === t.f.i) this.key(t, 'ok'); return; }
       if (z === 'name' || z === 'remove') { t.f.zone = 'home'; t.f.i = i; t.f.part = z; }
       else if (z === 'other') { t.f.zone = 'other'; t.f.j = i; rememberOther(t); }
-      else if (z === 'head') { t.f.zone = 'head'; t.f.h = i; }
+      else if (z === 'head') t.f.zone = 'head';
       else return;
       this.key(t, 'ok');
     }
@@ -866,7 +836,7 @@
     var L = t.lifted;
     begin();
     if (same(L.order, S.c.home)) { t.lifted = null; return; }
-    if (!homeMove(L.order.slice(), L.id, L.snap)) return;
+    if (!homeMove(L.order.slice(), L.id)) return;
     t.lifted = null;
     S.note = app(L.id).name + ' se movió a la posición ' + (t.f.i + 1) + '.';
   }
@@ -1120,17 +1090,14 @@
     renderAppFocusName(hs);
   }
 
-  function clockText() {
-    var d = new Date(), h = d.getHours(), m = d.getMinutes();
-    return (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
-  }
+  function clockText() { return window.CleanFrameClock.time(); }
   function clockHtml() {
     var text = clockText(), metrics = fontMetrics[homeFont()];
     if (!metrics || !metrics.digitCell) return text;
     return text.replace(/[0-9]/g, function (digit) { return '<span class="clock-digit">' + digit + '</span>'; });
   }
   function renderCaption(t, hs) {
-    var html = '<span class="clock">' + clockHtml() + '</span>';
+    var html = '<span class="clock">' + clockHtml() + '</span><span class="cap-line cap-date">' + esc(window.CleanFrameClock.date()) + '</span>';
     if (S.c.apps !== 'icons' && hs.items[hs.i] && (S.c.layout === 'list' ? photoLabel(hs.items[hs.i].id, false).size < 88 || photoLabel(hs.items[hs.i].id, false).ellipsis : hs.zone === 'apps' && reducedDockLabel(hs.items[hs.i].id))) html += '<span class="cap-line full-name">' + esc(app(hs.items[hs.i].id).name) + '</span>';
     setHTML(caption, html);
   }
@@ -1573,7 +1540,7 @@
   }
   function headButtons(list, fi, prefix) {
     return list.map(function (b, i) {
-      return '<button type="button" tabindex="-1" class="btn' + (i === fi ? ' is-focus' : '') + (b[2] ? ' ' + b[2] : '') + '" data-z="head" data-i="' + i + '" data-action="' + prefix + '.' + b[0] + '" aria-label="' + esc(b[0] === 'undo' ? undoCaption() : b[1]) + '">' + (b[3] ? icon(b[3]) : '') + '<span>' + b[1] + '</span></button>';
+      return '<button type="button" tabindex="-1" class="btn' + (i === fi ? ' is-focus' : '') + (b[2] ? ' ' + b[2] : '') + '" data-z="head" data-i="' + i + '" data-action="' + prefix + '.' + b[0] + '" aria-label="' + esc(b[1]) + '">' + (b[3] ? icon(b[3]) : '') + '<span>' + b[1] + '</span></button>';
     }).join('');
   }
   var FRAMES = {
@@ -1583,7 +1550,7 @@
         + '<div class="row-cue grid-before" data-slot="before" aria-hidden="true">' + icon('up') + '</div><div class="row-cue grid-after" data-slot="after" aria-hidden="true">' + icon('down') + '</div>';
     },
     editor: function () {
-      return '<h2 class="s-title">Apps</h2><p class="s-sub" data-slot="sub"></p><div class="s-head" data-slot="head"></div>'
+      return '<div class="settings-back" data-slot="back"></div><h2 class="settings-title">Apps</h2><p class="s-sub" data-slot="sub"></p>'
         + '<p class="s-label z-home" data-slot="lh"></p><p class="s-label z-other">Fuera del inicio</p>'
         + '<div class="ed-home" data-slot="home"></div><div class="ed-order-break" data-slot="break">Después, desplazar</div><div class="ed-other-view" data-slot="ov"><div class="ed-other" data-slot="other"></div></div><div class="ed-origin" data-slot="origin"></div>'
         + '<div class="row-cue editor-before" data-slot="otherBefore" aria-hidden="true">' + icon('up') + '</div><div class="row-cue editor-after" data-slot="otherAfter" aria-hidden="true">' + icon('down') + '</div>';
@@ -1639,13 +1606,13 @@
     editor: function (t, el) {
       var f = t.f, H = t.lifted ? t.lifted.order : S.c.home, O = otherGroups(), list = O.recent.concat(O.rest), full = S.c.home.length >= CAP;
       var entries = [], ys = [], y = 0, yf, minTop, maxTop = 0, rowEnd, before = false, afterRows = false;
-      var hint = catalog.error ? catalog.error : catalog.loading ? 'Cargando apps instaladas…' : f.zone === 'head' && f.h === 0 ? undoCaption() : f.zone === 'home' && f.part === 'remove' ? (H.length <= 1 ? LAST : app(H[f.i]).name + ' sigue instalada.') : '';
-      setHTML(el.sub, editStatus(hint, t.lifted ? 'Moviendo ' + app(t.lifted.id).name + '. OK la ubica, Atrás la devuelve.' : ''));
-      setHTML(el.head, headButtons([['undo', 'Deshacer', S.undo.length ? '' : 'is-idle', 'undo'], ['done', 'Listo', '', 'check']], f.zone === 'head' ? f.h : -1, 'editor'));
-      el.head.className = 's-head' + (f.zone === 'head' ? ' is-awake' : '');
+      var hint = catalog.error ? catalog.error : catalog.loading ? 'Cargando apps instaladas…' : f.zone === 'home' && f.part === 'remove' ? (H.length <= 1 ? LAST : app(H[f.i]).name + ' sigue instalada.') : '';
+      setHTML(el.sub, editStatus(hint, t.lifted ? 'Moviendo ' + app(t.lifted.id).name + '. OK o Atrás la deja aquí.' : ''));
+      // The same way back as Appearance's groups: to the screen the editor was opened from.
+      setHTML(el.back, '<button type="button" tabindex="-1" class="setting-choice setting-back' + (f.zone === 'head' ? ' is-focus' : '') + '" data-z="head" data-i="0" data-action="editor.back">' + icon('left') + '<span>' + (t.origin === 'apps' ? 'Todas las apps' : 'Apariencia') + '</span></button>');
       setHTML(el.lh, 'En el inicio <span class="s-count">' + S.c.home.length + ' de ' + CAP + '</span>');
       el['break'].className = 'ed-order-break' + (H.length > editorCut() ? ' is-on' : '');
-      el['break'].style.top = (264 + editorCut() * ED_ROW) + 'px';
+      el['break'].style.top = (ED_TOP + editorCut() * ED_ROW) + 'px';
 
       keyed(el.home, H.map(function (id) { return { key: id, id: id }; }), function (row, it, i) {
         var a = app(it.id), here = f.zone === 'home' && i === f.i, lifted = !!t.lifted && i === f.i;
@@ -1655,12 +1622,12 @@
         row.querySelector('.er-num').textContent = String(i + 1);
         row.firstChild.className = 'er-name' + (here && (f.part === 'name' || lifted) ? ' is-focus' : '');
         row.lastChild.className = 'er-rm' + (here && f.part === 'remove' && !lifted ? ' is-focus' : '') + (H.length <= 1 ? ' is-limit' : '');
-        row.lastChild.firstChild.textContent = H.length <= 1 ? LAST : 'Quitar del inicio';
+        row.lastChild.firstChild.textContent = H.length <= 1 ? 'Mínimo una app' : 'Quitar del inicio';   // the subtitle says why
         attrs(row.firstChild, 'name', i, 'editor.move.' + it.id);
         attrs(row.lastChild, 'remove', i, 'editor.remove.' + it.id);
       });
       el.origin.className = 'ed-origin' + (t.lifted && t.lifted.from !== f.i ? ' is-on' : '');
-      if (t.lifted) el.origin.style.transform = 'translate3d(0,' + (264 + editorHomeY(t.lifted.from) + 16) + 'px,0)';
+      if (t.lifted) el.origin.style.transform = 'translate3d(0,' + (ED_TOP + editorHomeY(t.lifted.from) + 16) + 'px,0)';
 
       if (O.recent.length) { entries.push({ key: 'sep-recent', sep: 'Quitadas recientemente', y: y }); y += ED_SEP; }
       O.recent.forEach(function (id) { entries.push({ key: id, id: id, y: y }); ys.push(y); y += ED_ROW; });
@@ -1958,7 +1925,7 @@
     out.candidate = out.focusedChoice ? { axis: item.axis, value: item.value, action: item.action, pending: !!S.pending, pendingTarget: S.pending ? S.pending.target : null } : null;
     out.wallpaperPicker = t.id === 'wallpaper' ? { candidate: WALLS[t.i].id, applied: S.c.wall, shown: S.wallShown, pending: t.previewDue || S.wallPending,
       queuedApplying: !!t.applyPending, applyPending: t.applyPending, failed: t.failedId, zone: t.f.zone, top: t.top, visible: WALL_VISIBLE, backdrop: IMG.bg.src } : null;
-    out.undo = S.undo.map(function (u) { return u.label; }); out.storageOk = storageOk;
+    out.storageOk = storageOk;
     return JSON.parse(JSON.stringify(out));
   };
   QA.where = function () {

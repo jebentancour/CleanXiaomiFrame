@@ -291,19 +291,19 @@ try {
     await current.waitForFunction(() => !ShoreQA.state().catalog.loading);
     check('Delayed catalogue safely fills reopened view', (await call('where')).view === 'apps' && (await state()).catalog.ids.includes(EXTRA) && (await call('where')).focusCount === 1);
   });
-  await run('Immediate edits, undo, move cancellation and limits', async () => {
+  await run('Immediate edits, moves that always apply and limits', async () => {
     await page(); await editor();
     const start = (await state()).dock;
     await remove('netflix');
     check('Remove persists membership and keeps installation', !(await stored()).dock.includes('netflix') && (await current.evaluate(() => __tv.catalog.some(a => a.id === 'org.tizen.netflix-app'))));
     check('Focus follows removal into addable apps', (await state()).focusAction === 'editor.add.netflix', (await state()).focusAction);
     await nav('ok'); check('Second OK restores same position', same((await stored()).dock, start));
-    await remove('netflix'); await act('editor.undo'); check('Undo persists previous membership', same((await stored()).dock, start));
+    check('Editor has no Undo or Done', !(await call('actions')).some(a => a === 'editor.undo' || a === 'editor.done') && (await call('actions')).includes('editor.back'));
     await act('editor.move.netflix'); await nav('down'); check('Unfinished move does not write', same((await stored()).dock, start));
-    await nav('back'); check('Back cancels unfinished move', same((await state()).dock, start));
-    await act('editor.move.netflix'); await nav('down', 'ok');
     const moved = start.slice(); [moved[1], moved[2]] = [moved[2], moved[1]];
-    check('Placed move persists immediately', same((await stored()).dock, moved));
+    await nav('back'); check('Back places and saves the move', same((await stored()).dock, moved) && (await call('where')).view === 'editor');
+    await act('editor.move.netflix'); await nav('up', 'ok');
+    check('Placed move persists immediately', same((await stored()).dock, start));
     await act('editor.add.' + EXTRA); check('Nine-app cap prevents addition', (await state()).dock.length === 9 && !(await state()).dock.includes(EXTRA));
     await remove('stremio'); await act('editor.add.' + EXTRA);
     check('Native app can be pinned with stable ID', (await stored()).dock.includes(EXTRA) && (await state()).dock.length === 9);
@@ -814,6 +814,11 @@ try {
     check('Held Back closes one layer only', (await call('where')).view === 'settings' && (await state()).focusAction === 'settings.editor');
     await current.keyboard.up('Escape'); await current.keyboard.press('Escape');
     check('Released Back reaches Home', (await call('where')).view === 'home');
+  });
+  await run('Home date', async () => {
+    await page();
+    const date = await current.locator('#caption .cap-date').textContent();
+    check('Home shows the short date', /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo) \d{1,2} de [A-Z][a-z]{2}$/.test(date), date);
   });
   await run('Rotation pauses and warm return', async () => {
     await page({ minuteMs: 120 });

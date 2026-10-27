@@ -26,8 +26,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
 .photo{position:absolute;left:0;top:0;width:1920px;height:1080px;max-width:none;object-fit:cover;object-position:50% 50%}
 .scrim{position:absolute;left:0;top:560px;width:1920px;height:520px;background:linear-gradient(to bottom,rgba(4,10,12,0),rgba(4,10,12,.42) 70%,rgba(4,10,12,.52))}
-.shade{position:absolute;left:0;top:0;width:1920px;height:300px;background:linear-gradient(to bottom,rgba(4,10,12,.32),rgba(4,10,12,.14) 150px,rgba(4,10,12,0))}
-.tone-light .shade{background:linear-gradient(to bottom,rgba(4,10,12,.42),rgba(4,10,12,.2) 160px,rgba(4,10,12,0))}
+/* No band across the top: only the photos calibrated for it keep a local mist or halo behind the clock (below). */
+.shade{position:absolute;left:0;top:0;width:1920px;height:300px}
 .ut-dim{position:absolute;left:0;top:0;width:1920px;height:1080px;display:none;background:radial-gradient(ellipse 640px 240px at 1620px 104px,rgba(10,8,6,.20),rgba(10,8,6,0));pointer-events:none}
 .tone-light .ut-dim{background:radial-gradient(ellipse 640px 240px at 1620px 104px,rgba(10,8,6,.30),rgba(10,8,6,0))}
 .bg-photo .ut-dim{display:block}
@@ -326,9 +326,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .lay-note{position:absolute;left:140px;top:608px;max-width:1040px;font-size:30px;line-height:42px;font-weight:500;color:var(--mute)}
 
 /* B: two-zone Home editor */
-.z-home,.z-other{top:216px}
+.z-home,.z-other{top:252px}
+.at-editor .s-sub{top:204px}
 .z-other{left:1068px}
-.ed-home{position:absolute;left:112px;top:264px;width:880px;height:752px}
+.ed-home{position:absolute;left:112px;top:300px;width:880px;height:744px}
 .er{position:absolute;left:0;top:0;width:880px;height:72px;display:flex;gap:8px;transition:transform var(--t) var(--ease)}
 .er-name{flex:1;min-width:0;display:flex;align-items:center;gap:20px;padding:0 24px 0 16px;border-radius:24px;font-size:34px;font-weight:500;letter-spacing:-.5px;white-space:nowrap;transition:background-color 140ms linear}
 .er-num{width:36px;text-align:right;font-size:28px;color:var(--mute);font-variant-numeric:tabular-nums}
@@ -346,13 +347,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .er-rm.is-limit.is-focus{color:var(--solid-warn)}
 .er.is-lifted .er-rm{visibility:hidden}
 .mark-sp{width:56px;height:44px;flex:none}
-.ed-other-view{position:absolute;left:1040px;top:264px;width:768px;height:752px;overflow:hidden}
+.ed-other-view{position:absolute;left:1040px;top:300px;width:768px;height:744px;overflow:hidden}
 .ed-other{position:absolute;left:0;top:0;width:768px;transition:transform var(--t) var(--ease)}
 .eo{position:absolute;left:0;top:0;width:768px;height:72px;display:flex;align-items:center;gap:20px;padding:0 16px 0 24px;border-radius:24px;font-size:34px;font-weight:500;letter-spacing:-.5px;white-space:nowrap;transition:background-color 140ms linear}
 .eo.is-focus{background:var(--plate);box-shadow:var(--plate-edge)}
 .eo-text{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .eo-verb{margin-left:auto;flex:none}
 .eo-verb:empty{display:none}
+.eo-verb .verb{font-size:30px;font-weight:500;letter-spacing:-.3px}
 .eo-sep{position:absolute;left:28px;top:0;height:56px;line-height:60px;font-size:28px;font-weight:600;color:var(--faint);white-space:nowrap}
 .ed-origin{position:absolute;left:96px;top:0;width:6px;height:40px;border-radius:3px;background:var(--faint);opacity:0}
 .ed-origin.is-on{opacity:1}
@@ -360,8 +362,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .ed-order-break.is-on{display:flex}
 .ed-order-break::after{content:"";height:1px;flex:1;background:var(--line)}
 .editor-before,.editor-after{left:1408px;width:32px}
-.editor-before{top:264px}
-.editor-after{top:976px}
+.editor-before{top:300px}
+.editor-after{top:1004px}
 
 /* The focused control carries its own persistent retry state. */
 .focus-status{position:absolute;z-index:5;height:28px;display:none;align-items:center;justify-content:center;text-align:center;font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.2px;color:var(--warn);white-space:nowrap;pointer-events:none}
@@ -380,6 +382,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .msg-note{position:absolute;left:140px;top:540px;max-width:1200px;font-size:30px;line-height:42px;color:var(--mute)}
 .msg-acts{position:absolute;left:112px;top:660px;display:flex;gap:12px}
 
+/* Date under the clock, in the Home font, both aligned left in either layout. */
+.cap-date{opacity:.82}
+
 @media (prefers-reduced-motion:reduce){
   .stage,.stage *{transition:none!important;animation:none!important}
   .tile .mark,.tile .label,.gt .mark{transform:none!important;animation:none!important}
@@ -394,7 +399,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .scene{position:absolute;left:0;top:0;width:1920px;height:1080px;background:var(--ground);overflow:hidden;transform-origin:0 0}
 .at-appearance .scene,.at-wallpaper .scene{z-index:2;transform:translate3d(858px,288px,0) scale(.48);border-radius:32px;pointer-events:none}
 .bg-dark.at-appearance .scene,.bg-light.at-appearance .scene{box-shadow:0 0 0 4px var(--line)}
-.l-list .caption{left:auto;right:140px;top:112px;align-items:flex-end;text-align:right;max-width:880px}
+.l-list .caption{left:auto;right:140px;top:112px;align-items:flex-start;text-align:left;max-width:880px}
 .l-list.at-arrange .caption{top:72px}
 .bg-dark .clock,.bg-light .clock{opacity:.72;text-shadow:none}
 .bg-dark .cap-title,.bg-light .cap-title,.bg-dark .cap-line,.bg-light .cap-line{color:var(--ink);text-shadow:none}
@@ -460,8 +465,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .bg-photo.l-list .caption .clock,.bg-photo.l-list .caption .cap-title,.bg-photo.l-list .caption .cap-line{color:var(--tr-ink);text-shadow:var(--tr-shadow)}
 .bg-photo.l-list.has-clock-ink .caption .clock{color:var(--clock-ink);opacity:1;text-shadow:none}
 .bg-photo.l-dock.has-dock-clock-ink .caption .clock{color:var(--dock-clock-ink);opacity:1;text-shadow:none}
-.bg-photo.l-dock.tl-mist .shade{background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(10,8,6,.24),rgba(10,8,6,.14) 55%,rgba(10,8,6,0)),linear-gradient(to bottom,rgba(4,10,12,.32),rgba(4,10,12,.14) 150px,rgba(4,10,12,0))}
-.bg-photo.l-dock.tone-light.tl-mist .shade{background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(10,8,6,.24),rgba(10,8,6,.14) 55%,rgba(10,8,6,0)),linear-gradient(to bottom,rgba(4,10,12,.42),rgba(4,10,12,.2) 160px,rgba(4,10,12,0))}
+.bg-photo.l-dock.tl-mist .shade{background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(10,8,6,.24),rgba(10,8,6,.14) 55%,rgba(10,8,6,0))}
 .quiet-utils{--u-ink:var(--tr-ink);--u-rest:var(--tr-rest);--u-peer:var(--tr-peer);--u-under:var(--tr-under);--u-shadow:var(--tr-shadow)}
 .l-list .quiet-utils{--u-ink:var(--br-ink);--u-rest:var(--br-rest);--u-peer:var(--br-peer);--u-under:var(--br-under);--u-shadow:var(--br-shadow)}
 .quiet-utils .u{color:var(--u-ink);opacity:var(--u-rest);text-shadow:var(--u-shadow)}
@@ -489,10 +493,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 /* Fixed regional support levels are resolved offline with each photo. */
 .bg-photo.ink-tr-mist-high{--tr-a:.44!important;--tr-b:.28!important}
 .bg-photo.ink-br-mist-high{--br-a:.44!important;--br-b:.28!important}
-.bg-photo.l-dock.ink-tl-mist-high .shade{background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(10,8,6,.44),rgba(10,8,6,.28) 55%,rgba(10,8,6,0)),linear-gradient(to bottom,rgba(4,10,12,.32),rgba(4,10,12,.14) 150px,rgba(4,10,12,0))!important}
+.bg-photo.l-dock.ink-tl-mist-high .shade{background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(10,8,6,.44),rgba(10,8,6,.28) 55%,rgba(10,8,6,0))!important}
 .bg-photo.l-dock.ink-tl-dark-halo .shade{display:block!important;background:radial-gradient(ellipse 560px 200px at 188px 104px,rgba(255,252,248,.12),rgba(255,252,248,.06) 55%,rgba(255,252,248,0))!important}
 .bg-photo.ink-tr-dark-halo .ut-tr{display:block;background:radial-gradient(ellipse 900px 260px at 1500px 104px,rgba(255,252,248,.12),rgba(255,252,248,.06) 55%,rgba(255,252,248,0))!important}
 .bg-photo.l-list.ink-br-dark-halo .ut-br{display:block;background:radial-gradient(ellipse 900px 260px at 1560px 878px,rgba(255,252,248,.12),rgba(255,252,248,.06) 55%,rgba(255,252,248,0))!important}
+/* On photos the clock and date are always light and carry their own shadow for contrast, instead of a
+   per-photo ink. The light halos meant for a dark clock would now wash it out, so they go too. */
+.stage.bg-photo .home .caption .clock,.stage.bg-photo .home .caption .cap-date{color:#f6f1e7!important;opacity:1!important;text-shadow:0 0 2px rgba(0,0,0,.55),0 1px 4px rgba(0,0,0,.5),0 0 10px rgba(0,0,0,.45),0 0 22px rgba(0,0,0,.35)!important}
+.stage.bg-photo .home .caption .cap-date{opacity:.9!important}
+/* Nothing darkens or lightens the top right either: this build shows no controls there. */
+.stage.bg-photo.l-dock.ink-tl-dark-halo .shade,.stage.bg-photo .ut-tr{display:none!important}
 .appearance{position:absolute;z-index:3;inset:0;color:var(--ink);pointer-events:none}
 .settings-back{position:absolute;left:124px;top:60px;pointer-events:auto}
 .settings-title{position:absolute;left:140px;top:132px;font-size:56px;line-height:68px;font-weight:500;letter-spacing:-1.6px}
@@ -599,7 +609,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 .font-custom .home .quiet-utils .u-label{position:relative;top:var(--font-utility-shift)}
 .font-custom.l-list .home .quiet-utils .u-label{top:calc(-1px + var(--font-utility-shift))}
 .font-custom .home .ph-action>span,.font-custom .home .dock-action>span{position:relative;top:var(--font-action-shift)}
-.home .monogram,.home .cap-count,.home .cap-line:not(.full-name),.home .wall-keep,.home .error-chip{font-family:Manrope,Arial,sans-serif}
+.home .monogram,.home .cap-count,.home .cap-line:not(.full-name):not(.cap-date),.home .wall-keep,.home .error-chip{font-family:Manrope,Arial,sans-serif}
 .font-newsreader .home{font-variation-settings:"opsz" 28;font-optical-sizing:none}
 .font-newsreader .home .ph-name{font-variation-settings:"opsz" 72;font-optical-sizing:none}
 .font-newsreader .home .clock{font-variation-settings:"opsz" 48;font-optical-sizing:none}

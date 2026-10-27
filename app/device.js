@@ -74,6 +74,8 @@
     } catch (err) { finish(failure(err)); }
   }
   function home(done) { if (host()) done(null); else launchApp('com.samsung.tv.csfs', done); }
+  /* The screensaver, now (Android only; nothing elsewhere). */
+  function dream() { if (host() && host().dream) host().dream(); }
   function settings(done) { if (host()) hostCall(host().tvSettings(), done); else launchApp('com.samsung.tv.coba.setting', done); }
   function androidApps(done) {
     var result;
@@ -105,5 +107,5 @@
       }, function (err) { finish(failure(err)); });
     } catch (err) { finish(failure(err)); }
   }
-  window.FrameDevice = { launch: launch, launchApp: launchApp, devices: devices, recent: recent, sound: sound, close: close, appInfo: appInfo, art: art, home: home, settings: settings, apps: apps };
+  window.FrameDevice = { launch: launch, launchApp: launchApp, devices: devices, recent: recent, sound: sound, close: close, appInfo: appInfo, art: art, home: home, dream: dream, settings: settings, apps: apps };
 }());

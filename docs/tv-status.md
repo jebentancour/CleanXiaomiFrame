@@ -45,3 +45,11 @@ Preserve this configuration and `.local/native-home/original.json`. Restore the 
 The helper uses undocumented native operations, guarded for the reference identity and firmware. Its source is in `scripts/native-home/`; compiled tools, original values and diagnostics stay private. See [development](development.md), the [setup guide](agent-tv-setup-guide.md) and the [native helper notes](../scripts/native-home/README.md).
 
 Implementation reference: [S90D firmware 2130 native Home work](https://github.com/splitcipher/couchroot/blob/83906b468836869933012da03a4018fb339462b3/docs/devices/s90d/README.md). That is a different model; it does not establish compatibility with another TV.
+
+## Xiaomi Google TV (Android build)
+
+Reference: Xiaomi MiTV-MOOR4, Google TV on Android 11, set up as in [Xiaomi Google TV setup](android-xiaomi.md).
+
+On 26 October 2026, `app.cleanframe.tv` 0.6.1-android was reinstalled from scratch, because the debug key that signed the previous build was lost. Launcher preferences reset to defaults. Usage access, the accessibility service, the Home assignment and the screensaver were reapplied and read back equal to the values recorded just before. The signing key is now kept in the ignored `.local/android/debug.keystore`.
+
+The owner confirmed on screen that Home pressed inside another app shows the quick menu over it, Home pressed again goes to CleanFrame, and Back closes the menu. This firmware delivers `KEYCODE_HOME` to the accessibility service. Home was then changed to press = Home, hold = quick menu, and the owner confirmed it on screen. With the overlay page preloaded, it now opens as soon as Home has been held 200 ms, also confirmed on screen. Back on Home starting the screensaver (System UI's `Somnambulator` shortcut) and the screensaver's clock and date were also confirmed on screen.

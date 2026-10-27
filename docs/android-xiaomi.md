@@ -84,7 +84,7 @@ adb -s TV:5555 shell settings put secure screensaver_components app.cleanframe.t
 adb -s TV:5555 shell settings put secure screensaver_enabled 1
 ```
 
-It starts after the TV's sleep timeout (Settings → System → Power & energy). To go back to the Google one: `com.google.android.apps.tv.dreamx/.service.Backdrop`.
+It fades in from black and shows the wallpapers with the clock and date. It starts after the TV's sleep timeout (Settings → System → Power & energy). To go back to the Google one: `com.google.android.apps.tv.dreamx/.service.Backdrop`.
 
 ## 7. Updates
 
@@ -101,8 +101,9 @@ Set it back to `0` to restore automatic updates.
 | Remote | On Home | Anywhere |
 | --- | --- | --- |
 | Arrows, OK | Move along the dock, open | |
-| Back | Close the open panel | |
+| Back | Close the open panel; with none open, start the screensaver | |
 | Home | | Back to CleanXiaomiFrame |
+| Home held | | Quick menu (time and date); held again to close |
 | Apps | | All apps |
 | OK held, in All apps | Close the app, or its page in TV settings | |
 | Settings | | TV settings |
@@ -111,6 +112,10 @@ Set it back to `0` to restore automatic updates.
 | Xiaomi TV+, Netflix, Prime Video | | Nothing |
 
 The **Apariencia** tile, always last in the dock, opens the launcher's own settings: background, layout, fonts, focus, and **Apps** to add, remove and reorder the apps in the dock. HDMI devices come first in the dock and Apariencia last; neither can be moved.
+
+### Quick menu
+
+Home held past 200 ms shows, without waiting for release, a panel at the top right with the time and date as Home shows them (*Lunes 26 de Oct*, in the Home font, aligned left), over whatever is open, which keeps playing. A short Home press still goes to CleanXiaomiFrame, and closes the menu. Home held again, Back, OK or an arrow closes it; it also closes by itself after 10 seconds. Over the screensaver Home only wakes it. Holding Home no longer reaches the system's own long-press action. The accessibility service of step 4 draws it (`QuickMenu.java`, showing `src/main/dream/quick.html`), so while that service is off Home simply goes Home and holding it does what the system decides.
 
 ## Troubleshooting
 

@@ -1,6 +1,7 @@
 package app.cleanframe.tv;
 
 import android.service.dreams.DreamService;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 
 /** Screensaver: CleanFrame's wallpapers with the clock and date (src/main/dream/dream.html). */
@@ -28,9 +29,18 @@ public class PhotoDream extends DreamService {
     @Override
     public void onDreamingStopped() { dreaming = false; super.onDreamingStopped(); }
 
+    /**
+     * Android's dream manager keeps each finished screensaver's binder, and through it this service and its window,
+     * until its own garbage collection. Taking the WebView out of the window first keeps it out of that.
+     */
     @Override
     public void onDetachedFromWindow() {
-        if (web != null) { web.destroy(); web = null; }
+        if (web != null) {
+            ViewGroup parent = (ViewGroup) web.getParent();
+            if (parent != null) parent.removeView(web);
+            web.destroy();
+            web = null;
+        }
         super.onDetachedFromWindow();
     }
 }

@@ -51,7 +51,7 @@ The APK carries the web app from `app/`: change the interface there, rebuild and
 adb -s TV:5555 shell appops set app.cleanframe.tv GET_USAGE_STATS allow
 ```
 
-**Remote buttons** (Settings, YouTube, Apps, and the blocked Xiaomi TV+, Netflix and Prime Video) go through an accessibility service:
+**Remote buttons** (Settings, YouTube, Apps, the microphone, and the blocked Xiaomi TV+, Netflix and Prime Video) go through an accessibility service:
 
 ```sh
 adb -s TV:5555 shell settings put secure enabled_accessibility_services app.cleanframe.tv/app.cleanframe.tv.KeyService
@@ -59,6 +59,8 @@ adb -s TV:5555 shell settings put secure accessibility_enabled 1
 ```
 
 **Android switches the accessibility service off on every reinstall: run those two lines after each `adb install`.** While it is off, pressing Settings with the stock launcher disabled crashes Xiaomi's `partnercustomizer`; Android then refuses to restart it and the Input button stops working too, until the TV is restarted.
+
+**The microphone button** asks Home Assistant's Assist, once it has the microphone permission and your HA address and token: see [Home Assistant Assist](home-assistant-assist.md). Without them the button only shows that Assist is not configured.
 
 ## 5. Make it the Home screen
 
@@ -114,6 +116,7 @@ Set it back to `0` to restore automatic updates.
 | OK held, in All apps | Close the app, or its page in TV settings | |
 | Settings | | TV settings |
 | YouTube | | YouTube |
+| Microphone | | Ask Home Assistant's Assist; pressed again or Back, stop |
 | Input, volume | | As before (Live TV's input list; the soundbar over HDMI-CEC) |
 | Xiaomi TV+, Netflix, Prime Video | | Nothing |
 

@@ -25,7 +25,7 @@ import java.util.Map;
  * relative paths behave as they do in the browser preview. /appicon/<package>.png renders that
  * app's launcher icon for the app list.
  */
-final class WebAssets extends WebViewClient {
+class WebAssets extends WebViewClient {
     static final String ORIGIN = "https://cleanframe.local/";
     private static final Map<String, String> TYPES = new HashMap<>();
     static {

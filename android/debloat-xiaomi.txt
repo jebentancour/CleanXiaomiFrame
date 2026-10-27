@@ -35,7 +35,8 @@ android.autoinstalls.config.xiaomi.amelie
 com.xiaomi.mitv.smartshare
 com.xiaomi.wfdsinkhelperservice
 
-# Google Assistant voice (the remote's microphone button stops working)
+# Google Assistant voice. Without it the remote's microphone button asks Home Assistant's Assist
+# instead (Assist.java); apps with their own voice search, such as YouTube, still hear the remote
 com.google.android.katniss
 com.google.android.tv.assistant
 

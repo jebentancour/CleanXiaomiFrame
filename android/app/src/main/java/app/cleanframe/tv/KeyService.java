@@ -13,7 +13,8 @@ import android.view.accessibility.AccessibilityEvent;
  * Remote buttons that Xiaomi's partnercustomizer and the stock launcher used to handle:
  * Settings (KEYCODE_SETTINGS) opens the TV settings, since partnercustomizer would send it to the
  * Google TV quick panel, which is gone with the stock launcher disabled. YouTube (BUTTON_3) opens
- * YouTube when it is installed. Apps (ALL_APPS) opens CleanFrame's full app list. Xiaomi TV+ (BUTTON_5), Netflix (BUTTON_6) and Prime Video (BUTTON_7)
+ * YouTube when it is installed. The microphone button asks Home Assistant's Assist (Assist.java);
+ * Back closes its panel. Apps (ALL_APPS) opens CleanFrame's full app list. Xiaomi TV+ (BUTTON_5), Netflix (BUTTON_6) and Prime Video (BUTTON_7)
  * do nothing: their apps are disabled, and TV+ would otherwise reopen Live TV on the last HDMI input.
  * Home pressed goes Home; held, it shows the quick menu over whatever is open (held again, it closes).
  * While the menu shows, Back, OK and the arrows close it without reaching the app.
@@ -21,10 +22,13 @@ import android.view.accessibility.AccessibilityEvent;
  */
 public class KeyService extends AccessibilityService {
     private static final String YOUTUBE = "com.google.android.youtube.tv";
+    /** The remote's microphone button: KEY_SEARCH, which Xiaomi's key layout maps to KEYCODE_PROG_BLUE. */
+    private static final int KEYCODE_MIC = KeyEvent.KEYCODE_PROG_BLUE;
     /** Home held this long opens the quick menu instead of going Home. */
     private static final long HOLD_MS = 200;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private QuickMenu quick;
+    private Assist assist;
     /** Whether this Home press, decided on its first down, is kept from the system, and whether it became a hold. */
     private boolean homeKept, homeHeld;
     private final Runnable homeHold = () -> {
@@ -33,7 +37,7 @@ public class KeyService extends AccessibilityService {
     };
 
     @Override
-    protected void onServiceConnected() { quick = new QuickMenu(this); quick.prepare(); }
+    protected void onServiceConnected() { quick = new QuickMenu(this); quick.prepare(); assist = new Assist(this); }
 
     @Override
     protected boolean onKeyEvent(KeyEvent event) {
@@ -42,6 +46,12 @@ public class KeyService extends AccessibilityService {
         if (code == KeyEvent.KEYCODE_HOME) return onHome(event);
         if (quick != null && quick.isShown() && closesQuick(code)) {
             if (event.getAction() == KeyEvent.ACTION_UP) quick.hide();
+            return true;
+        }
+        if (assist != null && (code == KEYCODE_MIC || assist.isShown() && code == KeyEvent.KEYCODE_BACK)) {
+            if (event.getAction() == KeyEvent.ACTION_UP && !event.isCanceled()) {
+                if (code == KEYCODE_MIC) assist.toggle(); else assist.hide();
+            }
             return true;
         }
         switch (code) {
@@ -121,6 +131,7 @@ public class KeyService extends AccessibilityService {
     public void onDestroy() {
         handler.removeCallbacks(homeHold);
         if (quick != null) quick.release();
+        if (assist != null) assist.release();
         super.onDestroy();
     }
 }

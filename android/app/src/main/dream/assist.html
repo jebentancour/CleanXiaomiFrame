@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CleanFrame</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/typefaces.css">
+<style>
+  /* The quick menu's panel (quick.html), at the same place and in the same Home-stage vw sizes. */
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; cursor: none; }
+  .veil { position: absolute; inset: 0; background: rgba(6,8,10,.38); animation: fade 180ms linear; }
+  .panel { position: absolute; right: 3.333vw; top: 3.333vw; width: 31.25vw; display: flex; flex-direction: column; gap: .625vw;
+    padding: 2.083vw 2.917vw 2.292vw; border-radius: 1.667vw; background: rgba(18,20,22,.86);
+    box-shadow: inset 0 1px 0 rgba(255,250,240,.1), 0 1.25vw 3.333vw rgba(0,0,0,.32); color: #f6f1e7;
+    font-family: Manrope, Arial, sans-serif; font-synthesis: none; animation: slide 220ms cubic-bezier(.2,.7,.2,1); }
+  .status { display: flex; align-items: center; gap: .833vw; font-size: 1.25vw; line-height: 1.667vw; font-weight: 500; opacity: .72; }
+  .dot { width: .833vw; height: .833vw; border-radius: 50%; background: #f6f1e7; }
+  .listening .dot { background: #ff6b5e; animation: pulse 1s ease-in-out infinite alternate; }
+  .thinking .dot { animation: pulse 600ms ease-in-out infinite alternate; }
+  .error .dot { background: #ff6b5e; }
+  .heard { font-size: 1.563vw; line-height: 2.083vw; font-weight: 500; opacity: .82; }
+  .answer { font-size: 1.875vw; line-height: 2.5vw; font-weight: 500; letter-spacing: -.01vw; }
+  .heard:empty, .answer:empty { display: none; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slide { from { opacity: 0; transform: translate3d(2.5vw,0,0); } to { opacity: 1; transform: none; } }
+  @keyframes pulse { from { opacity: .35; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="veil"></div>
+<div class="panel" id="panel">
+  <div class="status"><span class="dot"></span><span id="status"></span></div>
+  <div class="heard" id="heard"></div>
+  <div class="answer" id="answer"></div>
+</div>
+<script src="assets/clock.js"></script>
+<script>
+/* Android Assist panel (Assist.java): what Home Assistant heard and answered, in the Home font.
+   Assist.java calls CleanFrameAssist.set(state, text) as the question moves along. */
+(function () {
+  'use strict';
+  var C = window.CleanFrameClock;
+  var panel = document.getElementById('panel'), status = document.getElementById('status'),
+    heard = document.getElementById('heard'), answer = document.getElementById('answer');
+  var LABELS = { listening: 'Escuchando…', thinking: 'Pensando…', answer: 'Home Assistant', error: 'Home Assistant' };
+  function font() {
+    var id = C.savedFont(), f = C.fonts[id];
+    panel.style.fontFamily = id !== 'manrope' ? '"' + f.family + '", Manrope, sans-serif' : '';
+  }
+  window.CleanFrameAssist = {
+    set: function (state, text) {
+      font();
+      panel.className = 'panel ' + state;
+      status.textContent = LABELS[state] || '';
+      if (state === 'listening') { heard.textContent = ''; answer.textContent = ''; }
+      else if (state === 'thinking') { if (text) heard.textContent = text; }
+      else answer.textContent = text;
+    }
+  };
+  font();
+}());
+</script>
+</body>
+</html>

@@ -21,7 +21,7 @@ CleanXiaomiFrame takes [CleanFrame](https://github.com/nthnclrk/CleanFrame), a S
 - **Your apps**: add, remove and reorder them under Apariencia → Apps. Apps you uninstall leave the dock by themselves.
 - **All apps**: the remote's Apps button opens a Launchpad-style grid of every installed app, with an **Abiertas** row of recently used apps on top. Hold OK on an app to close it or open its page in TV settings (Force stop, Clear data).
 - **Screensaver**: the same photographs, one a minute with a crossfade, and the clock.
-- **Remote buttons**: Settings opens the TV settings, YouTube opens YouTube, Apps opens All apps; the Xiaomi TV+, Netflix and Prime Video buttons do nothing. Volume and Input are untouched.
+- **Remote buttons**: Settings opens the TV settings, YouTube opens YouTube, the microphone asks [Home Assistant's Assist](docs/home-assistant-assist.md) when set up, Apps opens All apps; the Xiaomi TV+, Netflix and Prime Video buttons do nothing. Volume and Input are untouched.
 - **Navigation sounds**: the TV's own system sounds when focus moves.
 
 ## Install it on your TV

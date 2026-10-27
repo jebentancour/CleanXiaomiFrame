@@ -33,6 +33,10 @@ does not authorise those changes. Keep a private setup/recovery record.
 
 The setup guide supplies the stage-by-stage instructions and completion criteria. A fork needs coordinated changes to the manifest, identity assertions in `scripts/check.py`, signing profile, device launch/self-filter logic and native helper target if used. The maintainer's stable identity is for updates to the maintainer's installation; it is not another user's signing setup.
 
+## Home Assistant Assist on the Xiaomi build
+
+The Android build can send the remote's microphone to the owner's Home Assistant Assist. Follow the prompt in [Home Assistant Assist](home-assistant-assist.md). The owner creates the access token and writes it into ignored `.local/assist.properties`; never ask for it in chat, print it or commit it, and check the file only by its length and HA's answer. Use the HA IP address the TV can reach, confirm the remote's microphone key on that TV before relying on the reference key code, and treat the `RECORD_AUDIO` grant and the file push as device operations to announce.
+
 ## Native Home and startup
 
 This is an optional, undocumented firmware-specific experiment. Read the native section of the setup guide and `scripts/native-home/README.md`. Check the actual model, firmware, API capability, user permissions and original values. Query/inspect also stages temporary files, so it is a device operation. The helper has hard-coded guards for the reference TV and requires private compiled output and a recovery baseline.

@@ -33,6 +33,7 @@ import java.util.Properties;
  *
  * The HA address and a long-lived access token come from assist.properties in the app's external
  * files folder, pushed over ADB (docs/android-xiaomi.md): url=http://homeassistant:8123, token=...
+ * An optional device_id names the TV's HA device, whose area Assist then uses for the question.
  */
 final class Assist {
     static final String CONFIG = "assist.properties";
@@ -236,6 +237,9 @@ final class Assist {
                 JSONObject request = new JSONObject().put("id", 1).put("type", "assist_pipeline/run")
                         .put("start_stage", "stt").put("end_stage", "tts")
                         .put("input", new JSONObject().put("sample_rate", RATE));
+                // The TV's HA device, so "turn off the lights" acts on the TV's area
+                String deviceId = config.getProperty("device_id", "");
+                if (!deviceId.isEmpty()) request.put("device_id", deviceId);
                 if (conversationId != null && System.currentTimeMillis() - conversationAt < FOLLOW_UP_MS) {
                     request.put("conversation_id", conversationId);
                 }

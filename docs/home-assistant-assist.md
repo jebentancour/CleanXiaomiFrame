@@ -88,6 +88,14 @@ git check-ignore .local/assist.properties
 
 `.local/` is ignored by Git. Do not commit the file, paste the token into an issue or a chat, or put it in a build.
 
+Optionally, add a `device_id` line so Assist knows which room the TV is in. A question without an area, such as "apagá las luces", then acts on the area of that HA device instead of failing or asking where. Use the device HA already has for the TV (for example the one behind its Android TV Remote or Cast media player), with the TV's area set on it. Its ID is the last part of the address of its page under Settings → Devices & services → Devices, or `{{ device_id('media_player.<your_tv>') }}` in Developer tools → Template:
+
+```sh
+printf 'device_id=%s\n' <HA_DEVICE_ID> >> .local/assist.properties
+```
+
+Without it, Assist still works but only knows an area when the question names one.
+
 ### 4. Install, grant the microphone and push the file
 
 After an APK install, switch the accessibility service on again (step 4 of the setup guide). Then:
